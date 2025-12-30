@@ -1,4 +1,3 @@
-// Auto-generated from pasted.txt + menu list
 export const services = {
   "Brows": [
     [

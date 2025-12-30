@@ -1,21 +1,22 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import useRevealOnScroll from "./useRevealOnScroll";
 
-function clampIndex(i, len){
+function clampIndex(i, len) {
   if (len <= 0) return 0;
   return (i % len + len) % len;
 }
 
-export default function Gallery({ images = [], categories = ["All"], title = "Gallery" }){
+export default function Gallery({ images = [], categories = ["All"], title = "Gallery" }) {
   const [activeIndex, setActiveIndex] = useState(null);
   const [activeCat, setActiveCat] = useState("All");
-
-  useRevealOnScroll();
 
   const filtered = useMemo(() => {
     if (activeCat === "All") return images;
     return images.filter((img) => img.category === activeCat);
   }, [images, activeCat]);
+
+  // ✅ Re-run reveal logic whenever the category (or number of tiles) changes
+  useRevealOnScroll("[data-reveal]", [activeCat, filtered.length]);
 
   const active = useMemo(() => {
     if (activeIndex === null) return null;
@@ -23,8 +24,14 @@ export default function Gallery({ images = [], categories = ["All"], title = "Ga
   }, [activeIndex, filtered]);
 
   const close = useCallback(() => setActiveIndex(null), []);
-  const prev = useCallback(() => setActiveIndex((i) => clampIndex((i ?? 0) - 1, filtered.length)), [filtered.length]);
-  const next = useCallback(() => setActiveIndex((i) => clampIndex((i ?? 0) + 1, filtered.length)), [filtered.length]);
+  const prev = useCallback(
+    () => setActiveIndex((i) => clampIndex((i ?? 0) - 1, filtered.length)),
+    [filtered.length]
+  );
+  const next = useCallback(
+    () => setActiveIndex((i) => clampIndex((i ?? 0) + 1, filtered.length)),
+    [filtered.length]
+  );
 
   useEffect(() => {
     if (activeIndex === null) return;
@@ -48,13 +55,16 @@ export default function Gallery({ images = [], categories = ["All"], title = "Ga
     setActiveIndex(null);
   }, [activeCat]);
 
-  if (!images.length){
+  if (!images.length) {
     return (
       <section className="section" data-reveal>
         <div className="container">
           <div className="section__header">
             <h2 className="h2">{title}</h2>
-            <p className="muted">Add your images into <code>client/src/assets/gallery</code> and update <code>src/data/galleryAuto.js</code>.</p>
+            <p className="muted">
+              Add your images into <code>client/src/assets/gallery</code> and update{" "}
+              <code>src/data/galleryAuto.js</code>.
+            </p>
           </div>
         </div>
       </section>
@@ -112,9 +122,15 @@ export default function Gallery({ images = [], categories = ["All"], title = "Ga
       {active && (
         <div className="lightbox" role="dialog" aria-modal="true" aria-label="Image viewer" onMouseDown={close}>
           <div className="lightbox__inner" onMouseDown={(e) => e.stopPropagation()}>
-            <button className="iconbtn" type="button" onClick={close} aria-label="Close">✕</button>
-            <button className="iconbtn iconbtn--left" type="button" onClick={prev} aria-label="Previous">‹</button>
-            <button className="iconbtn iconbtn--right" type="button" onClick={next} aria-label="Next">›</button>
+            <button className="iconbtn" type="button" onClick={close} aria-label="Close">
+              ✕
+            </button>
+            <button className="iconbtn iconbtn--left" type="button" onClick={prev} aria-label="Previous">
+              ‹
+            </button>
+            <button className="iconbtn iconbtn--right" type="button" onClick={next} aria-label="Next">
+              ›
+            </button>
 
             <figure className="lightbox__figure">
               <img className="lightbox__img" src={active.src} alt={active.alt ?? ""} />

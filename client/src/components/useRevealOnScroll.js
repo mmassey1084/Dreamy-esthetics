@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
-export default function useRevealOnScroll(selector = "[data-reveal]") {
+export default function useRevealOnScroll(selector = "[data-reveal]", deps = []) {
   const location = useLocation();
 
   useEffect(() => {
@@ -14,6 +14,8 @@ export default function useRevealOnScroll(selector = "[data-reveal]") {
       const vh = window.innerHeight || document.documentElement.clientHeight;
 
       for (const el of nodes) {
+        // If your CSS hides [data-reveal] until .is-revealed,
+        // this ensures newly-rendered nodes can become visible.
         if (el.classList.contains("is-revealed")) continue;
 
         const rect = el.getBoundingClientRect();
@@ -23,8 +25,10 @@ export default function useRevealOnScroll(selector = "[data-reveal]") {
       }
     };
 
+    // Reveal anything already in view immediately
     revealNow();
 
+    // No IntersectionObserver support: show everything
     if (!("IntersectionObserver" in window)) {
       nodes.forEach((node) => node.classList.add("is-revealed"));
       return;
@@ -44,11 +48,15 @@ export default function useRevealOnScroll(selector = "[data-reveal]") {
 
     nodes.forEach((node) => io.observe(node));
 
-    const time = setTimeout(revealNow, 50);
+    // After state changes, DOM may settle a beat later
+    const t1 = setTimeout(revealNow, 50);
+    const t2 = setTimeout(revealNow, 250);
 
     return () => {
-      clearTimeout(time);
+      clearTimeout(t1);
+      clearTimeout(t2);
       io.disconnect();
     };
-  }, [selector, location.pathname]);
+  }, [selector, location.pathname, ...deps]);
 }
+
