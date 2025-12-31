@@ -236,7 +236,7 @@ export default function Booking(){
                     {loadingServices ? "Loading services..." : "Select a service…"}
                   </option>
 
-                  {serviceOptions.map((s) => (
+                  {serviceOptions.map((service) => (
                     <option key={service.id} value={service.id}>
                       {service.group} — {service.name} ({formatMoney(service.price)}) • {service.duration} min
                     </option>
