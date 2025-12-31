@@ -1,5 +1,4 @@
-import { useMemo, useState } from "react";
-import { services, serviceOptions } from "../data/services";
+import { useEffect, useMemo, useState } from "react";
 import { useCart } from "../state/cart.jsx";
 import { postJSON } from "../lib/api";
 
@@ -14,18 +13,24 @@ function validateBooking(values){
   if (!values.phone || !/^\+?[0-9()\-\s]{7,}$/.test(values.phone)) errors.phone = "Valid phone is required.";
   if (!values.date) errors.date = "Please select a date.";
   if (!values.time) errors.time = "Please select a time.";
-  if (!values.service) errors.service = "Please select a service.";
+  if (!values.serviceId) errors.serviceId = "Please select a service.";
   return errors;
 }
 
 export default function Booking(){
   const cart = useCart();
 
+  // Services loaded from DB via server endpoint
+  const [servicesByGroup, setServicesByGroup] = useState({});
+  const [serviceOptions, setServiceOptions] = useState([]);
+  const [loadingServices, setLoadingServices] = useState(true);
+  const [servicesError, setServicesError] = useState("");
+
   const [values, setValues] = useState({
     fullName: "",
     email: "",
     phone: "",
-    service: "",
+    serviceId: "",
     date: "",
     time: "",
     notes: ""
@@ -33,6 +38,39 @@ export default function Booking(){
 
   const [touched, setTouched] = useState({});
   const [status, setStatus] = useState({ state: "idle", message: "" });
+
+  useEffect(() => {
+    (async () => {
+      setLoadingServices(true);
+      setServicesError("");
+      try{
+        const res = await fetch("/api/services");
+        if (!res.ok) throw new Error(`Failed to load services (${res.status})`);
+        const data = await res.json();
+
+        const list = Array.isArray(data.services) ? data.services : [];
+
+        // serviceOptions = flat list for dropdown
+        setServiceOptions(list);
+
+        // servicesByGroup = grouped for the left "Services" menu
+        const grouped = {};
+        for (const s of list){
+          const g = s.group || "Other";
+          if (!grouped[g]) grouped[g] = [];
+          grouped[g].push([s.name, s.price, s.duration, s.description || ""]);
+        }
+        setServicesByGroup(grouped);
+      }catch(err){
+        console.error("Load services failed:", err);
+        setServicesError("Could not load services. Please refresh and try again.");
+        setServiceOptions([]);
+        setServicesByGroup({});
+      }finally{
+        setLoadingServices(false);
+      }
+    })();
+  }, []);
 
   const errors = useMemo(() => validateBooking(values), [values]);
   const hasErrors = Object.keys(errors).length > 0;
@@ -42,7 +80,8 @@ export default function Booking(){
 
   const submit = async (e) => {
     e.preventDefault();
-    setTouched({ fullName: true, email: true, phone: true, service: true, date: true, time: true });
+    setTouched({ fullName: true, email: true, phone: true, serviceId: true, date: true, time: true });
+
     if (hasErrors) {
       setStatus({ state: "error", message: "Please fix the highlighted fields." });
       return;
@@ -54,17 +93,25 @@ export default function Booking(){
         fullName: values.fullName.trim(),
         email: values.email.trim(),
         phone: values.phone.trim(),
-        service: values.service,
+        serviceId: Number(values.serviceId),
         date: values.date,
         time: values.time,
         notes: values.notes.trim(),
         cartItems: cart.items.map(i => ({ name: i.name, group: i.group, price: i.price, qty: i.qty }))
       };
+
       await postJSON("/api/booking", payload);
+
       setStatus({ state: "success", message: "Request sent! You’ll receive confirmation soon." });
       setValues(v => ({ ...v, notes: "" }));
     }catch(err){
-      setStatus({ state: "error", message: err.message || "Booking failed." });
+      // If server returns 409 for conflicts, shows a friendly message
+      const msg =
+        err?.status === 409
+          ? "That time is already taken. Please choose another slot."
+          : (err.message || "Booking failed.");
+
+      setStatus({ state: "error", message: msg });
     }
   };
 
@@ -77,12 +124,17 @@ export default function Booking(){
         </div>
 
         <div className="grid3 booking-layout">
+          {/* LEFT: Services list */}
           <div className="card" data-reveal>
             <h2 className="h3">Services</h2>
             <p className="muted">Tap “Add to Cart” to purchase, or select a service to book.</p>
 
+            {servicesError ? (
+              <div className="notice notice--error">{servicesError}</div>
+            ) : null}
+
             <div className="services">
-              {Object.entries(services).map(([group, items]) => (
+              {Object.entries(servicesByGroup).map(([group, items]) => (
                 <div className="card services__group" key={group}>
                   <div className="services__title">{group}</div>
                   <ul className="services__list" role="list">
@@ -121,6 +173,7 @@ export default function Booking(){
             </div>
           </div>
 
+          {/* MIDDLE: Booking form */}
           <div className="card" data-reveal>
             <h2 className="h3">Request an Appointment</h2>
             <p className="muted">Client + server validation included. Your request is sent to the Node server.</p>
@@ -129,46 +182,95 @@ export default function Booking(){
               <div className="form__row">
                 <label className="field">
                   <span className="field__label">Full Name</span>
-                  <input className={`input ${touched.fullName && errors.fullName ? "input--error" : ""}`} name="fullName" value={values.fullName} onChange={onChange} onBlur={() => mark("fullName")} required />
+                  <input
+                    className={`input ${touched.fullName && errors.fullName ? "input--error" : ""}`}
+                    name="fullName"
+                    value={values.fullName}
+                    onChange={onChange}
+                    onBlur={() => mark("fullName")}
+                    required
+                  />
                   {touched.fullName && errors.fullName && <span className="field__error">{errors.fullName}</span>}
                 </label>
 
                 <label className="field">
                   <span className="field__label">Phone</span>
-                  <input className={`input ${touched.phone && errors.phone ? "input--error" : ""}`} name="phone" value={values.phone} onChange={onChange} onBlur={() => mark("phone")} required />
+                  <input
+                    className={`input ${touched.phone && errors.phone ? "input--error" : ""}`}
+                    name="phone"
+                    value={values.phone}
+                    onChange={onChange}
+                    onBlur={() => mark("phone")}
+                    required
+                  />
                   {touched.phone && errors.phone && <span className="field__error">{errors.phone}</span>}
                 </label>
               </div>
 
               <label className="field">
                 <span className="field__label">Email</span>
-                <input className={`input ${touched.email && errors.email ? "input--error" : ""}`} name="email" type="email" value={values.email} onChange={onChange} onBlur={() => mark("email")} required />
+                <input
+                  className={`input ${touched.email && errors.email ? "input--error" : ""}`}
+                  name="email"
+                  type="email"
+                  value={values.email}
+                  onChange={onChange}
+                  onBlur={() => mark("email")}
+                  required
+                />
                 {touched.email && errors.email && <span className="field__error">{errors.email}</span>}
               </label>
 
               <label className="field">
                 <span className="field__label">Service</span>
-                <select className={`input ${touched.service && errors.service ? "input--error" : ""}`} name="service" value={values.service} onChange={onChange} onBlur={() => mark("service")} required>
-                  <option value="">Select a service…</option>
+                <select
+                  className={`input ${touched.serviceId && errors.serviceId ? "input--error" : ""}`}
+                  name="serviceId"
+                  value={values.serviceId}
+                  onChange={onChange}
+                  onBlur={() => mark("serviceId")}
+                  required
+                  disabled={loadingServices}
+                >
+                  <option value="">
+                    {loadingServices ? "Loading services..." : "Select a service…"}
+                  </option>
+
                   {serviceOptions.map((s) => (
-                    <option key={`${s.group}-${s.name}`} value={`${s.group}: ${s.name} (${formatMoney(s.price)})`}>
-                      {s.group} — {s.name} ({formatMoney(s.price)})
+                    <option key={service.id} value={service.id}>
+                      {service.group} — {service.name} ({formatMoney(service.price)}) • {service.duration} min
                     </option>
                   ))}
                 </select>
-                {touched.service && errors.service && <span className="field__error">{errors.service}</span>}
+                {touched.serviceId && errors.serviceId && <span className="field__error">{errors.serviceId}</span>}
               </label>
 
               <div className="form__row">
                 <label className="field">
                   <span className="field__label">Preferred Date</span>
-                  <input className={`input ${touched.date && errors.date ? "input--error" : ""}`} name="date" type="date" value={values.date} onChange={onChange} onBlur={() => mark("date")} required />
+                  <input
+                    className={`input ${touched.date && errors.date ? "input--error" : ""}`}
+                    name="date"
+                    type="date"
+                    value={values.date}
+                    onChange={onChange}
+                    onBlur={() => mark("date")}
+                    required
+                  />
                   {touched.date && errors.date && <span className="field__error">{errors.date}</span>}
                 </label>
 
                 <label className="field">
                   <span className="field__label">Preferred Time</span>
-                  <input className={`input ${touched.time && errors.time ? "input--error" : ""}`} name="time" type="time" value={values.time} onChange={onChange} onBlur={() => mark("time")} required />
+                  <input
+                    className={`input ${touched.time && errors.time ? "input--error" : ""}`}
+                    name="time"
+                    type="time"
+                    value={values.time}
+                    onChange={onChange}
+                    onBlur={() => mark("time")}
+                    required
+                  />
                   {touched.time && errors.time && <span className="field__error">{errors.time}</span>}
                 </label>
               </div>
@@ -182,7 +284,7 @@ export default function Booking(){
                 <div className="notice">
                   <strong>Cart attached to request:</strong>
                   <div className="muted" style={{ marginTop: ".35rem" }}>
-                    {cart.items.map(i => `${i.name} ×${i.qty}`).join(", ")}
+                    {cart.items.map(item => `${item.name} ×${item.qty}`).join(", ")}
                   </div>
                 </div>
               )}
@@ -202,6 +304,7 @@ export default function Booking(){
             </form>
           </div>
 
+          {/* RIGHT: Menu image*/}
           <div className="card card--glow" data-reveal>
             <h2 className="h3">Dreamy Services Menu</h2>
             <p className="muted">Reference menu image you provided.</p>

@@ -3,7 +3,7 @@ import { body, validationResult } from "express-validator";
 
 const router = express.Router();
 
-// demo in-memory (resets whenever server restarts)
+// demo in-memory
 const orders = [];
 
 router.post(

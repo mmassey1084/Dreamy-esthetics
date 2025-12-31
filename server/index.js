@@ -1,20 +1,22 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
-
 import bookingRouter from "./routes/booking.js";
 import giftCardRouter from "./routes/giftCard.js";
 import checkoutRouter from "./routes/checkout.js";
+import servicesRouter from "./routes/services.js";
+import { pool } from "./db/pool.js";
 
 dotenv.config();
-
+pool.query("SELECT 1")
+  .then(() => console.log("✅ MySQL connected"))
+  .catch((e) => console.error("❌ MySQL connection failed:", e));
 const app = express();
+console.log("DB_USER =", process.env.DB_USER);
+console.log("DB_NAME =", process.env.DB_NAME);
 
-/**
- * CORS
- * In dev, your frontend is likely Vite on http://localhost:5173
- * In prod, set CLIENT_ORIGIN in .env to your deployed frontend URL.
- */
 const allowedOrigin = process.env.CLIENT_ORIGIN || "http://localhost:5173";
 
 app.use(
@@ -25,8 +27,6 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
-
-// Make sure preflight OPTIONS requests succeed
 app.options("*", cors());
 
 /**
@@ -41,11 +41,12 @@ app.use(express.urlencoded({ extended: true }));
 app.get("/api/health", (_req, res) => res.json({ ok: true }));
 
 /**
- * API routes (match what your frontend calls)
+ * API routes
  */
 app.use("/api/booking", bookingRouter);
 app.use("/api/gift-card", giftCardRouter);
 app.use("/api/checkout", checkoutRouter);
+app.use("/api/services", servicesRouter);
 
 /**
  * 404 for unknown API routes
