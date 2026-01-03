@@ -40,37 +40,38 @@ export default function Booking(){
   const [status, setStatus] = useState({ state: "idle", message: "" });
 
   useEffect(() => {
-    (async () => {
-      setLoadingServices(true);
-      setServicesError("");
-      try{
-        const res = await fetch("/api/services");
-        if (!res.ok) throw new Error(`Failed to load services (${res.status})`);
-        const data = await res.json();
+  (async () => {
+    setLoadingServices(true);
+    setServicesError("");
+    try {
+      const res = await fetch("/services.json");
+      if (!res.ok) throw new Error(`Failed to load services (${res.status})`);
+      const data = await res.json();
 
-        const list = Array.isArray(data.services) ? data.services : [];
+      const list = Array.isArray(data.services) ? data.services : [];
 
-        // serviceOptions = flat list for dropdown
-        setServiceOptions(list);
+      // Flat list for dropdown
+      setServiceOptions(list);
 
-        // servicesByGroup = grouped for the left "Services" menu
-        const grouped = {};
-        for (const s of list){
-          const g = s.group || "Other";
-          if (!grouped[g]) grouped[g] = [];
-          grouped[g].push([s.name, s.price, s.duration, s.description || ""]);
-        }
-        setServicesByGroup(grouped);
-      }catch(err){
-        console.error("Load services failed:", err);
-        setServicesError("Could not load services. Please refresh and try again.");
-        setServiceOptions([]);
-        setServicesByGroup({});
-      }finally{
-        setLoadingServices(false);
+      // Grouped list for Services panel
+      const grouped = {};
+      for (const s of list) {
+        const g = s.group || "Other";
+        if (!grouped[g]) grouped[g] = [];
+        grouped[g].push([s.name, s.price, s.duration, s.description || ""]);
       }
-    })();
-  }, []);
+      setServicesByGroup(grouped);
+    } catch (err) {
+      console.error("Load services failed:", err);
+      setServicesError("Could not load services. Please refresh and try again.");
+      setServiceOptions([]);
+      setServicesByGroup({});
+    } finally {
+      setLoadingServices(false);
+    }
+  })();
+}, []);
+
 
   const errors = useMemo(() => validateBooking(values), [values]);
   const hasErrors = Object.keys(errors).length > 0;
