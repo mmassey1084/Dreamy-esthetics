@@ -847,12 +847,26 @@ body.reveal-on [data-reveal].is-revealed {
   padding: 0;
   overflow: hidden;
 }
+/* Media images */
 .media__img {
   width: 100%;
+  display: block;
+  border-radius: 18px;
+}
+
+/* Default images crop like a hero photo */
+.media__img:not(.media__img--contain) {
   height: 520px;
   object-fit: cover;
-  display: block;
 }
+
+/* ✅ Tall images (like service menu) show fully */
+.media__img--contain {
+  height: auto !important;
+  max-height: none;
+  object-fit: contain;
+}
+
 .media__caption {
   padding: 1rem 1.1rem 1.2rem 1.1rem;
 }
