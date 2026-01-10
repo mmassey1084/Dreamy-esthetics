@@ -9,7 +9,7 @@ export default function Navbar({ variant = "solid" }){
       <div className="nav__inner">
         <div className="nav__brand">
           <img className="nav__logo" src="/images/brand/logo.png" alt="Dreamy Esthetics logo" />
-          <span className="nav__name">Dreamy Esthetics</span>
+          <NavLink to="/" className="nav__name">Dreamy Esthetics</NavLink>
         </div>
 
         <nav className="nav__links" aria-label="Primary navigation">

@@ -129,7 +129,7 @@ export default function CartDrawer(){
                 <strong>{formatMoney(cart.subtotal)}</strong>
               </div>
               <div className="muted" style={{ marginTop: ".35rem" }}>
-                Demo checkout (no payment gateway). Your server receives the order and returns an order ID.
+                Demo checkout (no payment gateway). The server receives the order and returns an order ID.
               </div>
             </div>
 
