@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { useCart } from "../state/cart.jsx";
-import { postJSON } from "../lib/api";
+import { getJSON, postJSON } from "../lib/api"; // ✅ use helpers (no API_BASE here)
 
-function formatMoney(n){
+function formatMoney(n) {
   return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(n || 0);
 }
 
-function validateBooking(values){
+function validateBooking(values) {
   const errors = {};
   if (!values.fullName || values.fullName.trim().length < 2) errors.fullName = "Full name is required.";
   if (!values.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) errors.email = "Valid email is required.";
@@ -17,10 +17,10 @@ function validateBooking(values){
   return errors;
 }
 
-export default function Booking(){
+export default function Booking() {
   const cart = useCart();
 
-  // Services loaded from DB via server endpoint
+  // Services loaded from API via helper
   const [servicesByGroup, setServicesByGroup] = useState({});
   const [serviceOptions, setServiceOptions] = useState([]);
   const [loadingServices, setLoadingServices] = useState(true);
@@ -33,51 +33,49 @@ export default function Booking(){
     serviceId: "",
     date: "",
     time: "",
-    notes: ""
+    notes: "",
   });
 
   const [touched, setTouched] = useState({});
   const [status, setStatus] = useState({ state: "idle", message: "" });
 
   useEffect(() => {
-  (async () => {
-    setLoadingServices(true);
-    setServicesError("");
-    try {
-      const res = await fetch("/services.json");
-      if (!res.ok) throw new Error(`Failed to load services (${res.status})`);
-      const data = await res.json();
+    (async () => {
+      setLoadingServices(true);
+      setServicesError("");
 
-      const list = Array.isArray(data.services) ? data.services : [];
+      try {
+        // ✅ Call relative API path; helper adds base URL
+        const data = await getJSON("/api/services");
+        const list = Array.isArray(data?.services) ? data.services : [];
 
-      // Flat list for dropdown
-      setServiceOptions(list);
+        // Flat list for dropdown
+        setServiceOptions(list);
 
-      // Grouped list for Services panel
-      const grouped = {};
-      for (const s of list) {
-        const g = s.group || "Other";
-        if (!grouped[g]) grouped[g] = [];
-        grouped[g].push([s.name, s.price, s.duration, s.description || ""]);
+        // Grouped list for Services panel
+        const grouped = {};
+        for (const s of list) {
+          const g = s.group || "Other";
+          if (!grouped[g]) grouped[g] = [];
+          grouped[g].push([s.name, s.price, s.duration, s.description || ""]);
+        }
+        setServicesByGroup(grouped);
+      } catch (err) {
+        console.error("Load services failed:", err);
+        setServicesError("Could not load services. Please refresh and try again.");
+        setServiceOptions([]);
+        setServicesByGroup({});
+      } finally {
+        setLoadingServices(false);
       }
-      setServicesByGroup(grouped);
-    } catch (err) {
-      console.error("Load services failed:", err);
-      setServicesError("Could not load services. Please refresh and try again.");
-      setServiceOptions([]);
-      setServicesByGroup({});
-    } finally {
-      setLoadingServices(false);
-    }
-  })();
-}, []);
-
+    })();
+  }, []);
 
   const errors = useMemo(() => validateBooking(values), [values]);
   const hasErrors = Object.keys(errors).length > 0;
 
-  const onChange = (e) => setValues(v => ({ ...v, [e.target.name]: e.target.value }));
-  const mark = (name) => setTouched(t => ({ ...t, [name]: true }));
+  const onChange = (e) => setValues((v) => ({ ...v, [e.target.name]: e.target.value }));
+  const mark = (name) => setTouched((t) => ({ ...t, [name]: true }));
 
   const submit = async (e) => {
     e.preventDefault();
@@ -89,7 +87,8 @@ export default function Booking(){
     }
 
     setStatus({ state: "loading", message: "Sending..." });
-    try{
+
+    try {
       const payload = {
         fullName: values.fullName.trim(),
         email: values.email.trim(),
@@ -98,19 +97,24 @@ export default function Booking(){
         date: values.date,
         time: values.time,
         notes: values.notes.trim(),
-        cartItems: cart.items.map(i => ({ name: i.name, group: i.group, price: i.price, qty: i.qty }))
+        cartItems: cart.items.map((i) => ({
+          name: i.name,
+          group: i.group,
+          price: i.price,
+          qty: i.qty,
+        })),
       };
 
+      // ✅ Call relative API path; helper adds base URL
       await postJSON("/api/booking", payload);
 
       setStatus({ state: "success", message: "Request sent! You’ll receive confirmation soon." });
-      setValues(v => ({ ...v, notes: "" }));
-    }catch(err){
-      // If server returns 409 for conflicts, shows a friendly message
+      setValues((v) => ({ ...v, notes: "" }));
+    } catch (err) {
       const msg =
         err?.status === 409
           ? "That time is already taken. Please choose another slot."
-          : (err.message || "Booking failed.");
+          : err?.message || "Booking failed.";
 
       setStatus({ state: "error", message: msg });
     }
@@ -130,9 +134,7 @@ export default function Booking(){
             <h2 className="h3">Services</h2>
             <p className="muted">Tap “Add to Cart” to purchase, or select a service to book.</p>
 
-            {servicesError ? (
-              <div className="notice notice--error">{servicesError}</div>
-            ) : null}
+            {servicesError ? <div className="notice notice--error">{servicesError}</div> : null}
 
             <div className="services">
               {Object.entries(servicesByGroup).map(([group, items]) => (
@@ -169,8 +171,12 @@ export default function Booking(){
 
             <div className="divider" />
             <div className="ctaRow">
-              <button className="btn btn--primary" onClick={cart.open}>Open Cart</button>
-              <a className="btn btn--ghost" href="/policy">Read Policy</a>
+              <button className="btn btn--primary" onClick={cart.open}>
+                Open Cart
+              </button>
+              <a className="btn btn--ghost" href="/policy">
+                Read Policy
+              </a>
             </div>
           </div>
 
@@ -233,9 +239,7 @@ export default function Booking(){
                   required
                   disabled={loadingServices}
                 >
-                  <option value="">
-                    {loadingServices ? "Loading services..." : "Select a service…"}
-                  </option>
+                  <option value="">{loadingServices ? "Loading services..." : "Select a service…"}</option>
 
                   {serviceOptions.map((service) => (
                     <option key={service.id} value={service.id}>
@@ -285,7 +289,7 @@ export default function Booking(){
                 <div className="notice">
                   <strong>Cart attached to request:</strong>
                   <div className="muted" style={{ marginTop: ".35rem" }}>
-                    {cart.items.map(item => `${item.name} ×${item.qty}`).join(", ")}
+                    {cart.items.map((item) => `${item.name} ×${item.qty}`).join(", ")}
                   </div>
                 </div>
               )}
@@ -294,11 +298,17 @@ export default function Booking(){
                 <button className="btn btn--primary" type="submit" disabled={status.state === "loading"}>
                   {status.state === "loading" ? "Sending..." : "Submit Booking Request"}
                 </button>
-                <button className="btn btn--ghost" type="button" onClick={cart.open}>Checkout Cart</button>
+                <button className="btn btn--ghost" type="button" onClick={cart.open}>
+                  Checkout Cart
+                </button>
               </div>
 
               {status.state !== "idle" && (
-                <div className={`notice ${status.state === "success" ? "notice--success" : status.state === "error" ? "notice--error" : ""}`}>
+                <div
+                  className={`notice ${
+                    status.state === "success" ? "notice--success" : status.state === "error" ? "notice--error" : ""
+                  }`}
+                >
                   {status.message}
                 </div>
               )}

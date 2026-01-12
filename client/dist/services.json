@@ -1,0 +1,252 @@
+{
+  "services": [
+    {
+      "id": 1,
+      "group": "Brows",
+      "name": "Brow + Lip Wax",
+      "price": 23,
+      "duration": 40,
+      "description": "Standard brow wax with shaping and lip wax."
+    },
+    {
+      "id": 2,
+      "group": "Brows",
+      "name": "Brow Wax",
+      "price": 15,
+      "duration": 30,
+      "description": "Standard brow wax with shaping."
+    },
+    {
+      "id": 3,
+      "group": "Brows",
+      "name": "Brow Tint",
+      "price": 20,
+      "duration": 30,
+      "description": "Coloring your brows using tint that lasts 2-4 weeks."
+    },
+    {
+      "id": 4,
+      "group": "Brows",
+      "name": "Brow Lamination",
+      "price": 75,
+      "duration": 60,
+      "description": "Brow lamination is a perm for your eyebrows. It uses chemicals to lock your eyebrows into place, so they lie flat, look fuller, and are easier to shape. Results last about 6-8 weeks. Perfect for those with sparse, unruly, misshapen or uneven to transform them into fuller brows. Also includes brow wax."
+    },
+    {
+      "id": 5,
+      "group": "Facials",
+      "name": "Dreamy Signature Facial",
+      "price": 100,
+      "duration": 60,
+      "description": "Our signature facial includes deep cleansing with enzyme exfoliation, mask, extractions, facial massage and additional modalities (high frequency, microcurrent, LED light) based on your individual needs."
+    },
+    {
+      "id": 6,
+      "group": "Facials",
+      "name": "Express Facial",
+      "price": 65,
+      "duration": 45,
+      "description": "An express facial includes deep cleansing, exfoliation, mask, extractions and finishing products. Great for people on the go or a beginner facial."
+    },
+    {
+      "id": 7,
+      "group": "Facials",
+      "name": "Back Acne Treatment",
+      "price": 80,
+      "duration": 75,
+      "description": "This service includes deep cleansing, exfoliation, extractions, mask and additional modalities based on your individual needs (high frequency, LED light). Great for back acne, blackheads and whiteheads."
+    },
+    {
+      "id": 8,
+      "group": "Facials",
+      "name": "Dermaplaning Facial",
+      "price": 85,
+      "duration": 60,
+      "description": "Dermaplaning is a method of exfoliation that uses a scalpel to gently scrape off the top layer of dull dead skin and vellus hair (peach fuzz) to reveal smoother, brighter complexion. This service includes deep cleansing, dermaplaning, mask and finishing products."
+    },
+    {
+      "id": 9,
+      "group": "Facials",
+      "name": "Mini Facial",
+      "price": 70,
+      "duration": 60,
+      "description": "This facial is a shorter version of our signature facial. Includes deep cleansing, exfoliation, mask, facial massage and finishing products."
+    },
+    {
+      "id": 10,
+      "group": "Facials",
+      "name": "Custom Dreamy Facial",
+      "price": 80,
+      "duration": 60,
+      "description": "Our Dreamy custom facial includes deep cleansing, exfoliation, mask, extractions and finishing products. Each facial is customized to your skin care needs. $80.00 · 1 hr 15 min Back Acne Treatment This service includes deep cleansing, exfoliation, extractions, mask and additional modalities based on your individual needs (high frequency, LED light). Great for back acne, blackheads and whiteheads. $75.00 · 1 hr Dermaplaning Facial Dermaplaning is a method of exfoliation that uses a scalpel to gently scrape off the top layer of dull dead skin and vellus hair (peach fuzz) to reveal smoother, brighter complexion. This service includes deep cleansing, dermaplaning, mask and finishing products. $70.00 · 1 hr Mini Facial This facial is a shorter version of our signature facial. Includes deep cleansing, exfoliation, mask, facial massage and finishing products."
+    },
+    {
+      "id": 11,
+      "group": "Waxing",
+      "name": "Lip Wax",
+      "price": 10,
+      "duration": 20,
+      "description": "Upper lip hair removal."
+    },
+    {
+      "id": 12,
+      "group": "Waxing",
+      "name": "Chin Wax",
+      "price": 10,
+      "duration": 20,
+      "description": "Chin hair removal."
+    },
+    {
+      "id": 13,
+      "group": "Waxing",
+      "name": "Sideburn Wax",
+      "price": 15,
+      "duration": 30,
+      "description": "Sideburn hair removal."
+    },
+    {
+      "id": 14,
+      "group": "Waxing",
+      "name": "Underarm Wax",
+      "price": 25,
+      "duration": 40,
+      "description": "Underarm hair removal."
+    },
+    {
+      "id": 15,
+      "group": "Waxing",
+      "name": "Half Arm Wax",
+      "price": 30,
+      "duration": 45,
+      "description": "Hair removal from elbow to wrist."
+    },
+    {
+      "id": 16,
+      "group": "Waxing",
+      "name": "Full Arm Wax",
+      "price": 45,
+      "duration": 60,
+      "description": "Hair removal from shoulder to wrist."
+    },
+    {
+      "id": 17,
+      "group": "Waxing",
+      "name": "Half Leg Wax",
+      "price": 45,
+      "duration": 60,
+      "description": "Hair removal from knee to ankle."
+    },
+    {
+      "id": 18,
+      "group": "Waxing",
+      "name": "Full Leg Wax",
+      "price": 70,
+      "duration": 75,
+      "description": "Hair removal from thigh to ankle."
+    },
+    {
+      "id": 19,
+      "group": "Waxing",
+      "name": "Bikini Wax",
+      "price": 35,
+      "duration": 45,
+      "description": "Hair removal along bikini line."
+    },
+    {
+      "id": 20,
+      "group": "Waxing",
+      "name": "Stomach Wax",
+      "price": 25,
+      "duration": 40,
+      "description": "Stomach hair removal."
+    },
+    {
+      "id": 21,
+      "group": "Waxing",
+      "name": "Nose Wax",
+      "price": 15,
+      "duration": 20,
+      "description": "Nose hair removal."
+    },
+    {
+      "id": 22,
+      "group": "Brazilian",
+      "name": "Brazilian Wax",
+      "price": 60,
+      "duration": 60,
+      "description": "Full Brazilian hair removal."
+    },
+    {
+      "id": 23,
+      "group": "Brazilian",
+      "name": "Brazilian + Underarm Wax",
+      "price": 80,
+      "duration": 75,
+      "description": "Brazilian wax + underarm wax."
+    },
+    {
+      "id": 24,
+      "group": "Brazilian",
+      "name": "Brazilian + Bikini Wax",
+      "price": 70,
+      "duration": 75,
+      "description": "Brazilian wax + bikini wax."
+    },
+    {
+      "id": 25,
+      "group": "Lashes",
+      "name": "Lash Lift",
+      "price": 75,
+      "duration": 60,
+      "description": "A lash lift is a perm for your lashes. It gives you the appearance of longer, fuller lashes without using lash extensions. Results last about 6-8 weeks."
+    },
+    {
+      "id": 26,
+      "group": "Lashes",
+      "name": "Lash Tint",
+      "price": 20,
+      "duration": 30,
+      "description": "Coloring your lashes using tint that lasts 2-4 weeks."
+    },
+    {
+      "id": 27,
+      "group": "Lashes",
+      "name": "Lash Lift + Tint",
+      "price": 90,
+      "duration": 75,
+      "description": "Lash lift + lash tint combo service."
+    },
+    {
+      "id": 28,
+      "group": "Add-ons",
+      "name": "High Frequency",
+      "price": 15,
+      "duration": 15,
+      "description": "High frequency is an electrical current that increases oxygen to the skin and kills bacteria, reducing acne, inflammation and redness."
+    },
+    {
+      "id": 29,
+      "group": "Add-ons",
+      "name": "LED Light Therapy",
+      "price": 20,
+      "duration": 20,
+      "description": "LED light therapy treats acne, inflammation, redness and helps with anti-aging. Light energy triggers cells to work harder, helping skin repair and rejuvenation."
+    },
+    {
+      "id": 30,
+      "group": "Add-ons",
+      "name": "Microcurrent",
+      "price": 20,
+      "duration": 20,
+      "description": "Microcurrent is a low-level electrical current that tones facial muscles, stimulates collagen, improves circulation and helps with fine lines."
+    },
+    {
+      "id": 31,
+      "group": "Add-ons",
+      "name": "Wax Patch Test",
+      "price": 15,
+      "duration": 30,
+      "description": "A patch test will determine if you have any allergies or adverse reactions to the wax. Please book your patch test today! Free ・ 10 min Neck Wax Basic neck wax."
+    }
+  ]
+}

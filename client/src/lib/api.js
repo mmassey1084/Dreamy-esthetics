@@ -1,28 +1,13 @@
-const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5000";
+// client/src/lib/api.js
 
-async function handle(res){
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) {
-    const msg = data?.message || "Request failed.";
-    const err = new Error(msg);
-    err.status = res.status;
-    err.data = data;
-    throw err;
-  }
-  return data;
-}
+export const API_BASE =
+  import.meta.env.VITE_API_BASE ||
+  "http://dreamy-esthetics-api-env.eba-rb2yene9.us-east-1.elasticbeanstalk.com";
 
-export async function postJSON(url, body) {
-  const res = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
-
-  // If server returns JSON error, surface it
+async function parse(res) {
   const text = await res.text();
   let data = null;
-  try { data = text ? JSON.parse(text) : null; } catch { /* ignore */ }
+  try { data = text ? JSON.parse(text) : null; } catch {}
 
   if (!res.ok) {
     const msg = data?.message || `Request failed (${res.status})`;
@@ -35,7 +20,18 @@ export async function postJSON(url, body) {
   return data;
 }
 
-export async function getJSON(path){
-  const res = await fetch(`${API_BASE}${path}`);
-  return handle(res);
+export async function getJSON(path) {
+  const url = path.startsWith("http") ? path : `${API_BASE}${path}`;
+  const res = await fetch(url, { method: "GET" });
+  return parse(res);
+}
+
+export async function postJSON(path, body) {
+  const url = path.startsWith("http") ? path : `${API_BASE}${path}`;
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  return parse(res);
 }

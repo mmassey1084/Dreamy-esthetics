@@ -330,7 +330,7 @@ code {
 }
 
 /* =========================
-   GLOBAL 2-COLUMN GRID (ABOUT PAGE + ANY NORMAL PAGE)
+   GLOBAL 2-COLUMN GRID 
    ========================= */
 .grid2 {
   display: grid;
@@ -339,7 +339,6 @@ code {
   align-items: start;
 }
 
-/* Make the About image card feel balanced in the right column */
 .grid2 .card--media {
   height: 100%;
 }
@@ -349,7 +348,7 @@ code {
 }
 
 /* =========================
-   HOME LAYOUT FIX (your current DOM)
+   HOME LAYOUT FIX 
    ========================= */
 .section--soft .grid2 {
   display: grid;
@@ -854,13 +853,11 @@ body.reveal-on [data-reveal].is-revealed {
   border-radius: 18px;
 }
 
-/* Default images crop like a hero photo */
 .media__img:not(.media__img--contain) {
   height: 520px;
   object-fit: cover;
 }
 
-/* ✅ Tall images (like service menu) show fully */
 .media__img--contain {
   height: auto !important;
   max-height: none;
@@ -880,22 +877,17 @@ body.reveal-on [data-reveal].is-revealed {
 }
 
 /* =========================
-   SERVICES GRID (FIXED FOR DESKTOP)
-   - Problem: services groups were forced into 3 columns inside the left grid3 column,
-     which makes each group too skinny and causes ugly wrapping.
-   - Fix: default to 2 columns with a stronger min width; only use 3 columns on very wide screens.
+   SERVICES GRID
    ========================= */
 .services {
   display: grid;
   gap: 1.1rem;
   align-items: start;
 
-  /* Default desktop: 2 columns so cards have room */
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 @media (min-width: 1320px) {
-  /* Very wide screens can handle 3 nicely */
   .services {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -903,7 +895,7 @@ body.reveal-on [data-reveal].is-revealed {
 
 .services__group {
   padding: 1.25rem 1.25rem;
-  min-width: 0; /* prevent overflow weirdness */
+  min-width: 0; 
 }
 
 .services__title {
@@ -1050,7 +1042,7 @@ body.reveal-on [data-reveal].is-revealed {
   gap: 24px;
   align-items: start;
 
-  /* Keep your nice 3-col layout, but give the left column a touch more room */
+  
   grid-template-columns: minmax(420px, 1.55fr) minmax(320px, 1fr) minmax(
       300px,
       0.9fr
