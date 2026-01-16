@@ -1,16 +1,22 @@
 import { useEffect, useMemo, useState } from "react";
 import { useCart } from "../state/cart.jsx";
-import { getJSON, postJSON } from "../lib/api"; // ✅ use helpers (no API_BASE here)
+import { getJSON, postJSON } from "../lib/api";
 
 function formatMoney(n) {
-  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(n || 0);
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(n || 0);
 }
 
 function validateBooking(values) {
   const errors = {};
-  if (!values.fullName || values.fullName.trim().length < 2) errors.fullName = "Full name is required.";
-  if (!values.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) errors.email = "Valid email is required.";
-  if (!values.phone || !/^\+?[0-9()\-\s]{7,}$/.test(values.phone)) errors.phone = "Valid phone is required.";
+  if (!values.fullName || values.fullName.trim().length < 2)
+    errors.fullName = "Full name is required.";
+  if (!values.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email))
+    errors.email = "Valid email is required.";
+  if (!values.phone || !/^\+?[0-9()\-\s]{7,}$/.test(values.phone))
+    errors.phone = "Valid phone is required.";
   if (!values.date) errors.date = "Please select a date.";
   if (!values.time) errors.time = "Please select a time.";
   if (!values.serviceId) errors.serviceId = "Please select a service.";
@@ -62,7 +68,9 @@ export default function Booking() {
         setServicesByGroup(grouped);
       } catch (err) {
         console.error("Load services failed:", err);
-        setServicesError("Could not load services. Please refresh and try again.");
+        setServicesError(
+          "Could not load services. Please refresh and try again."
+        );
         setServiceOptions([]);
         setServicesByGroup({});
       } finally {
@@ -74,15 +82,26 @@ export default function Booking() {
   const errors = useMemo(() => validateBooking(values), [values]);
   const hasErrors = Object.keys(errors).length > 0;
 
-  const onChange = (e) => setValues((v) => ({ ...v, [e.target.name]: e.target.value }));
+  const onChange = (e) =>
+    setValues((v) => ({ ...v, [e.target.name]: e.target.value }));
   const mark = (name) => setTouched((t) => ({ ...t, [name]: true }));
 
   const submit = async (e) => {
     e.preventDefault();
-    setTouched({ fullName: true, email: true, phone: true, serviceId: true, date: true, time: true });
+    setTouched({
+      fullName: true,
+      email: true,
+      phone: true,
+      serviceId: true,
+      date: true,
+      time: true,
+    });
 
     if (hasErrors) {
-      setStatus({ state: "error", message: "Please fix the highlighted fields." });
+      setStatus({
+        state: "error",
+        message: "Please fix the highlighted fields.",
+      });
       return;
     }
 
@@ -108,7 +127,10 @@ export default function Booking() {
       // ✅ Call relative API path; helper adds base URL
       await postJSON("/api/booking", payload);
 
-      setStatus({ state: "success", message: "Request sent! You’ll receive confirmation soon." });
+      setStatus({
+        state: "success",
+        message: "Request sent! You’ll receive confirmation soon.",
+      });
       setValues((v) => ({ ...v, notes: "" }));
     } catch (err) {
       const msg =
@@ -125,16 +147,23 @@ export default function Booking() {
       <div className="container">
         <div className="section__head" data-reveal>
           <h1 className="h2">Booking</h1>
-          <p className="muted">Browse services, add to cart, and request your appointment. (Cart checkout is separate.)</p>
+          <p className="muted">
+            Browse services, add to cart, and request your appointment. (Cart
+            checkout is separate.)
+          </p>
         </div>
 
         <div className="grid3 booking-layout">
           {/* LEFT: Services list */}
           <div className="card" data-reveal>
             <h2 className="h3">Services</h2>
-            <p className="muted">Tap “Add to Cart” to purchase, or select a service to book.</p>
+            <p className="muted">
+              Tap “Add to Cart” to purchase, or select a service to book.
+            </p>
 
-            {servicesError ? <div className="notice notice--error">{servicesError}</div> : null}
+            {servicesError ? (
+              <div className="notice notice--error">{servicesError}</div>
+            ) : null}
 
             <div className="services">
               {Object.entries(servicesByGroup).map(([group, items]) => (
@@ -147,12 +176,20 @@ export default function Booking() {
                           <div className="services__name">{name}</div>
                           <div className="services__meta">
                             <span>{duration} min</span>
-                            {description ? <span className="dot">•</span> : null}
-                            {description ? <span className="services__desc">{description}</span> : null}
+                            {description ? (
+                              <span className="dot">•</span>
+                            ) : null}
+                            {description ? (
+                              <span className="services__desc">
+                                {description}
+                              </span>
+                            ) : null}
                           </div>
                         </div>
                         <div className="services__right">
-                          <div className="services__price">{formatMoney(price)}</div>
+                          <div className="services__price">
+                            {formatMoney(price)}
+                          </div>
                           <button
                             className="btn btn--small btn--ghost"
                             type="button"
@@ -183,41 +220,54 @@ export default function Booking() {
           {/* MIDDLE: Booking form */}
           <div className="card" data-reveal>
             <h2 className="h3">Request an Appointment</h2>
-            <p className="muted">Client + server validation included. Your request is sent to the Node server.</p>
+            <p className="muted">
+              Client + server validation included. Your request is sent to the
+              Node server.
+            </p>
 
             <form className="form" onSubmit={submit} noValidate>
               <div className="form__row">
                 <label className="field">
                   <span className="field__label">Full Name</span>
                   <input
-                    className={`input ${touched.fullName && errors.fullName ? "input--error" : ""}`}
+                    className={`input ${
+                      touched.fullName && errors.fullName ? "input--error" : ""
+                    }`}
                     name="fullName"
                     value={values.fullName}
                     onChange={onChange}
                     onBlur={() => mark("fullName")}
                     required
                   />
-                  {touched.fullName && errors.fullName && <span className="field__error">{errors.fullName}</span>}
+                  {touched.fullName && errors.fullName && (
+                    <span className="field__error">{errors.fullName}</span>
+                  )}
                 </label>
 
                 <label className="field">
                   <span className="field__label">Phone</span>
                   <input
-                    className={`input ${touched.phone && errors.phone ? "input--error" : ""}`}
+                    className={`input ${
+                      touched.phone && errors.phone ? "input--error" : ""
+                    }`}
                     name="phone"
                     value={values.phone}
                     onChange={onChange}
                     onBlur={() => mark("phone")}
                     required
                   />
-                  {touched.phone && errors.phone && <span className="field__error">{errors.phone}</span>}
+                  {touched.phone && errors.phone && (
+                    <span className="field__error">{errors.phone}</span>
+                  )}
                 </label>
               </div>
 
               <label className="field">
                 <span className="field__label">Email</span>
                 <input
-                  className={`input ${touched.email && errors.email ? "input--error" : ""}`}
+                  className={`input ${
+                    touched.email && errors.email ? "input--error" : ""
+                  }`}
                   name="email"
                   type="email"
                   value={values.email}
@@ -225,13 +275,17 @@ export default function Booking() {
                   onBlur={() => mark("email")}
                   required
                 />
-                {touched.email && errors.email && <span className="field__error">{errors.email}</span>}
+                {touched.email && errors.email && (
+                  <span className="field__error">{errors.email}</span>
+                )}
               </label>
 
               <label className="field">
                 <span className="field__label">Service</span>
                 <select
-                  className={`input ${touched.serviceId && errors.serviceId ? "input--error" : ""}`}
+                  className={`input ${
+                    touched.serviceId && errors.serviceId ? "input--error" : ""
+                  }`}
                   name="serviceId"
                   value={values.serviceId}
                   onChange={onChange}
@@ -239,22 +293,31 @@ export default function Booking() {
                   required
                   disabled={loadingServices}
                 >
-                  <option value="">{loadingServices ? "Loading services..." : "Select a service…"}</option>
+                  <option value="">
+                    {loadingServices
+                      ? "Loading services..."
+                      : "Select a service…"}
+                  </option>
 
                   {serviceOptions.map((service) => (
                     <option key={service.id} value={service.id}>
-                      {service.group} — {service.name} ({formatMoney(service.price)}) • {service.duration} min
+                      {service.group} — {service.name} (
+                      {formatMoney(service.price)}) • {service.duration} min
                     </option>
                   ))}
                 </select>
-                {touched.serviceId && errors.serviceId && <span className="field__error">{errors.serviceId}</span>}
+                {touched.serviceId && errors.serviceId && (
+                  <span className="field__error">{errors.serviceId}</span>
+                )}
               </label>
 
               <div className="form__row">
                 <label className="field">
                   <span className="field__label">Preferred Date</span>
                   <input
-                    className={`input ${touched.date && errors.date ? "input--error" : ""}`}
+                    className={`input ${
+                      touched.date && errors.date ? "input--error" : ""
+                    }`}
                     name="date"
                     type="date"
                     value={values.date}
@@ -262,13 +325,17 @@ export default function Booking() {
                     onBlur={() => mark("date")}
                     required
                   />
-                  {touched.date && errors.date && <span className="field__error">{errors.date}</span>}
+                  {touched.date && errors.date && (
+                    <span className="field__error">{errors.date}</span>
+                  )}
                 </label>
 
                 <label className="field">
                   <span className="field__label">Preferred Time</span>
                   <input
-                    className={`input ${touched.time && errors.time ? "input--error" : ""}`}
+                    className={`input ${
+                      touched.time && errors.time ? "input--error" : ""
+                    }`}
                     name="time"
                     type="time"
                     value={values.time}
@@ -276,29 +343,48 @@ export default function Booking() {
                     onBlur={() => mark("time")}
                     required
                   />
-                  {touched.time && errors.time && <span className="field__error">{errors.time}</span>}
+                  {touched.time && errors.time && (
+                    <span className="field__error">{errors.time}</span>
+                  )}
                 </label>
               </div>
 
               <label className="field">
                 <span className="field__label">Notes (optional)</span>
-                <textarea className="input input--textarea" name="notes" value={values.notes} onChange={onChange} />
+                <textarea
+                  className="input input--textarea"
+                  name="notes"
+                  value={values.notes}
+                  onChange={onChange}
+                />
               </label>
 
               {cart.items.length > 0 && (
                 <div className="notice">
                   <strong>Cart attached to request:</strong>
                   <div className="muted" style={{ marginTop: ".35rem" }}>
-                    {cart.items.map((item) => `${item.name} ×${item.qty}`).join(", ")}
+                    {cart.items
+                      .map((item) => `${item.name} ×${item.qty}`)
+                      .join(", ")}
                   </div>
                 </div>
               )}
 
               <div className="form__actions">
-                <button className="btn btn--primary" type="submit" disabled={status.state === "loading"}>
-                  {status.state === "loading" ? "Sending..." : "Submit Booking Request"}
+                <button
+                  className="btn btn--primary"
+                  type="submit"
+                  disabled={status.state === "loading"}
+                >
+                  {status.state === "loading"
+                    ? "Sending..."
+                    : "Submit Booking Request"}
                 </button>
-                <button className="btn btn--ghost" type="button" onClick={cart.open}>
+                <button
+                  className="btn btn--ghost"
+                  type="button"
+                  onClick={cart.open}
+                >
                   Checkout Cart
                 </button>
               </div>
@@ -306,7 +392,11 @@ export default function Booking() {
               {status.state !== "idle" && (
                 <div
                   className={`notice ${
-                    status.state === "success" ? "notice--success" : status.state === "error" ? "notice--error" : ""
+                    status.state === "success"
+                      ? "notice--success"
+                      : status.state === "error"
+                      ? "notice--error"
+                      : ""
                   }`}
                 >
                   {status.message}
@@ -319,9 +409,16 @@ export default function Booking() {
           <div className="card card--glow" data-reveal>
             <h2 className="h3">Dreamy Services Menu</h2>
             <p className="muted">Reference menu image you provided.</p>
-            <img className="img" src="/images/content/services-menu.png" alt="Dreamy Services price menu" />
+            <img
+              className="img"
+              src="/images/content/services-menu.png"
+              alt="Dreamy Services price menu"
+            />
             <div className="divider" />
-            <p className="muted">Need help choosing? Add a note in your booking request and Morgan will guide you.</p>
+            <p className="muted">
+              Need help choosing? Add a note in your booking request and Morgan
+              will guide you.
+            </p>
           </div>
         </div>
       </div>

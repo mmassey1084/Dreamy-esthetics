@@ -3,10 +3,14 @@ import useRevealOnScroll from "./useRevealOnScroll";
 
 function clampIndex(i, len) {
   if (len <= 0) return 0;
-  return (i % len + len) % len;
+  return ((i % len) + len) % len;
 }
 
-export default function Gallery({ images = [], categories = ["All"], title = "Gallery" }) {
+export default function Gallery({
+  images = [],
+  categories = ["All"],
+  title = "Gallery",
+}) {
   const [activeIndex, setActiveIndex] = useState(null);
   const [activeCat, setActiveCat] = useState("All");
 
@@ -62,8 +66,8 @@ export default function Gallery({ images = [], categories = ["All"], title = "Ga
           <div className="section__header">
             <h2 className="h2">{title}</h2>
             <p className="muted">
-              Add your images into <code>client/src/assets/gallery</code> and update{" "}
-              <code>src/data/galleryAuto.js</code>.
+              Add your images into <code>client/src/assets/gallery</code> and
+              update <code>src/data/galleryAuto.js</code>.
             </p>
           </div>
         </div>
@@ -77,10 +81,17 @@ export default function Gallery({ images = [], categories = ["All"], title = "Ga
         <div className="section__header section__header--row">
           <div>
             <h2 className="h2">{title}</h2>
-            <p className="muted">Tap an image to view. Use ← → keys to navigate. Press Esc to close.</p>
+            <p className="muted">
+              Tap an image to view. Use ← → keys to navigate. Press Esc to
+              close.
+            </p>
           </div>
 
-          <div className="filters" role="tablist" aria-label="Gallery categories">
+          <div
+            className="filters"
+            role="tablist"
+            aria-label="Gallery categories"
+          >
             {categories.map((c) => (
               <button
                 key={c}
@@ -108,10 +119,17 @@ export default function Gallery({ images = [], categories = ["All"], title = "Ga
               role="listitem"
               data-reveal
             >
-              <img className="masonry__img" src={img.src} alt={img.alt ?? ""} loading="lazy" />
+              <img
+                className="masonry__img"
+                src={img.src}
+                alt={img.alt ?? ""}
+                loading="lazy"
+              />
               <div className="masonry__meta" aria-hidden="true">
                 <div className="masonry__cat">{img.category}</div>
-                {img.caption && <div className="masonry__cap">{img.caption}</div>}
+                {img.caption && (
+                  <div className="masonry__cap">{img.caption}</div>
+                )}
               </div>
               <span className="masonry__shine" aria-hidden="true" />
             </button>
@@ -120,20 +138,48 @@ export default function Gallery({ images = [], categories = ["All"], title = "Ga
       </div>
 
       {active && (
-        <div className="lightbox" role="dialog" aria-modal="true" aria-label="Image viewer" onMouseDown={close}>
-          <div className="lightbox__inner" onMouseDown={(e) => e.stopPropagation()}>
-            <button className="iconbtn" type="button" onClick={close} aria-label="Close">
+        <div
+          className="lightbox"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Image viewer"
+          onMouseDown={close}
+        >
+          <div
+            className="lightbox__inner"
+            onMouseDown={(e) => e.stopPropagation()}
+          >
+            <button
+              className="iconbtn"
+              type="button"
+              onClick={close}
+              aria-label="Close"
+            >
               ✕
             </button>
-            <button className="iconbtn iconbtn--left" type="button" onClick={prev} aria-label="Previous">
+            <button
+              className="iconbtn iconbtn--left"
+              type="button"
+              onClick={prev}
+              aria-label="Previous"
+            >
               ‹
             </button>
-            <button className="iconbtn iconbtn--right" type="button" onClick={next} aria-label="Next">
+            <button
+              className="iconbtn iconbtn--right"
+              type="button"
+              onClick={next}
+              aria-label="Next"
+            >
               ›
             </button>
 
             <figure className="lightbox__figure">
-              <img className="lightbox__img" src={active.src} alt={active.alt ?? ""} />
+              <img
+                className="lightbox__img"
+                src={active.src}
+                alt={active.alt ?? ""}
+              />
               <figcaption className="lightbox__caption">
                 <strong>{active.category}</strong>
                 {active.caption ? ` — ${active.caption}` : ""}
