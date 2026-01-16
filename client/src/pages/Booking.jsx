@@ -97,11 +97,11 @@ export default function Booking() {
         date: values.date,
         time: values.time,
         notes: values.notes.trim(),
-        cartItems: cart.items.map((i) => ({
-          name: i.name,
-          group: i.group,
-          price: i.price,
-          qty: i.qty,
+        cartItems: cart.items.map((item) => ({
+          name: item.name,
+          group: item.group,
+          price: item.price,
+          qty: item.qty,
         })),
       };
 
