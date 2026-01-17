@@ -84,7 +84,7 @@ export default function Booking() {
 
   const onChange = (e) =>
     setValues((value) => ({ ...value, [e.target.name]: e.target.value }));
-  const mark = (name) => setTouched((t) => ({ ...t, [name]: true }));
+  const mark = (name) => setTouched((touch) => ({ ...touch, [name]: true }));
 
   const submit = async (e) => {
     e.preventDefault();
