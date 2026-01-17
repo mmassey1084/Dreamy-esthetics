@@ -11,15 +11,13 @@ export default function useRevealOnScroll(selector = "[data-reveal]", deps = [])
     document.body.classList.add("reveal-on");
 
     const revealNow = () => {
-      const vh = window.innerHeight || document.documentElement.clientHeight;
+      const viewHeight = window.innerHeight || document.documentElement.clientHeight;
 
       for (const el of nodes) {
-        // If your CSS hides [data-reveal] until .is-revealed,
-        // this ensures newly-rendered nodes can become visible.
         if (el.classList.contains("is-revealed")) continue;
 
         const rect = el.getBoundingClientRect();
-        if (rect.top < vh * 0.92) {
+        if (rect.top < viewHeight * 0.92) {
           el.classList.add("is-revealed");
         }
       }
@@ -34,27 +32,27 @@ export default function useRevealOnScroll(selector = "[data-reveal]", deps = [])
       return;
     }
 
-    const io = new IntersectionObserver(
+    const InterObserver = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
           if (entry.isIntersecting) {
             entry.target.classList.add("is-revealed");
-            io.unobserve(entry.target);
+            InterObserver.unobserve(entry.target);
           }
         }
       },
       { threshold: 0.12, rootMargin: "0px 0px -10% 0px" }
     );
 
-    nodes.forEach((node) => io.observe(node));
+    nodes.forEach((node) => InterObserver.observe(node));
 
     // After state changes, DOM may settle a beat later
-    const t1 = setTimeout(revealNow, 50);
-    const t2 = setTimeout(revealNow, 250);
+    const time1 = setTimeout(revealNow, 50);
+    const time2 = setTimeout(revealNow, 250);
 
     return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
+      clearTimeout(time1);
+      clearTimeout(time2);
       io.disconnect();
     };
   }, [selector, location.pathname, ...deps]);
