@@ -92,16 +92,16 @@ export default function Gallery({
             role="tablist"
             aria-label="Gallery categories"
           >
-            {categories.map((c) => (
+            {categories.map((categorie) => (
               <button
-                key={c}
-                className={`filter ${activeCat === c ? "is-active" : ""}`}
-                onClick={() => setActiveCat(c)}
+                key={categorie}
+                className={`filter ${activeCat === categorie ? "is-active" : ""}`}
+                onClick={() => setActiveCat(categorie)}
                 type="button"
                 role="tab"
-                aria-selected={activeCat === c}
+                aria-selected={activeCat === categorie}
               >
-                {c}
+                {categorie}
               </button>
             ))}
           </div>
