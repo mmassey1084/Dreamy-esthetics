@@ -60,10 +60,10 @@ export default function Booking() {
 
         // Grouped list for Services panel
         const grouped = {};
-        for (const s of list) {
-          const g = s.group || "Other";
-          if (!grouped[g]) grouped[g] = [];
-          grouped[g].push([s.name, s.price, s.duration, s.description || ""]);
+        for (const service of list) {
+          const group = service.group || "Other";
+          if (!grouped[group]) grouped[group] = [];
+          grouped[group].push([service.name, service.price, service.duration, service.description || ""]);
         }
         setServicesByGroup(grouped);
       } catch (err) {
