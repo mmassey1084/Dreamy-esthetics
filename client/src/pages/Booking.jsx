@@ -83,7 +83,7 @@ export default function Booking() {
   const hasErrors = Object.keys(errors).length > 0;
 
   const onChange = (e) =>
-    setValues((v) => ({ ...v, [e.target.name]: e.target.value }));
+    setValues((value) => ({ ...value, [e.target.name]: e.target.value }));
   const mark = (name) => setTouched((t) => ({ ...t, [name]: true }));
 
   const submit = async (e) => {
